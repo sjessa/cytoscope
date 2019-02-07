@@ -19,11 +19,18 @@ ui <- fluidPage(
                  h3("Data"),
                  selectInput("sample", "Dataset", multiple = FALSE, selected = "ct_p3",
                              choices = list(
+                               
+                               # ********************
+                               # *** MODIFY THIS ****
+                               # ********************
+                               
                                "Sample collection 1" = c("Sample 1 name" = "s1_id",
                                                          "Sample 2 name" = "s2_id"),
                                "Sample collection 2" = c("Sample 3 name" = "s3_id",
                                                          "Sample 4 name" = "s4_id",
                                                          "Sample 5 name" = "s5_id")
+                               
+                               
                              )),
       selectInput("gene", "Genes (max 3)", choices = character(0), multiple = TRUE),
       selectInput("dr", "Dimensionality reduction", multiple = FALSE, choices = c("tsne", "pca"), selected = "tsne"),

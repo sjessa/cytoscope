@@ -9,8 +9,10 @@ for (i in seq_along(seurat_obj)) {
   
 }
 
+# ** MODIFY THIS **
 samples <- list(s1_id, s2_id, s3_id, s4_id, s5_id)
 
+# ** MODIFY THIS **
 names(samples) <- c("s1_id",
                     "s2_id",
                     "s3_id",
