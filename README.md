@@ -3,7 +3,7 @@
 
 A simple Shiny app for visualizing single cell data
 
-![](demo.png)
+![](demo2.png)
 
 ## 0. Structure
 
