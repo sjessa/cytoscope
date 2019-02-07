@@ -2,6 +2,8 @@
 library(Seurat)
 library(cytokit)
 library(shiny)
+library(DT)
+library(tidyverse)
 
 load("data/seurat_genes.Rda")
 
@@ -9,27 +11,20 @@ load("data/seurat_genes.Rda")
 ui <- fluidPage(
   
   # Application title
-  titlePanel("SC dev/PBT dataset"),
+  titlePanel("My dataset"),
   
   # Sidebar with input
   sidebarLayout(
     sidebarPanel(width = 3,
-      h3("Data"),
-      selectInput("sample", "Dataset", multiple = FALSE, selected = "data/ct_p0.seurat_small.Rda",
-                  choices = list(
-                    "Mouse forebrain samples" = c("Forebrain E12.5" = "data/ct_e12.seurat_small.Rda",
-                                                  "Forebrain E15.5" = "data/ct_e15.seurat_small.Rda",
-                                                  "Forebrain P0" = "data/ct_p0.seurat_small.Rda"),
-                    "Mouse pons/hindbrain samples" = c("Hindbrain E12.5" = "data/po_e12.seurat_small.Rda",
-                                                       "Pons E15.5" = "data/po_e15.seurat_small.Rda",
-                                                       "Pons P0" = "data/po_p0.seurat_small.Rda"),
-                    "Human fetal brain samples" = c("Human 19pcw brainstem" = "data/hg19w.seurat_small.Rda"),
-                    "Re-embedded clusters" = c("Embryonic pons progenitors" = "data/pons_prog.seurat_small.Rda",
-                                               "Human brainstem astrocytes" = "data/hg19w_astro.seurat_small.Rda"),
-                    "Patient tumor samples" = c("ETMR1" = "data/etmr1.seurat_small.Rda",
-                                                "WNT-MB-1" = "data/wnt1.seurat_small.Rda",
-                                                "ATRT1" = "data/atrt1.seurat_small.Rda")
-                  )),
+                 h3("Data"),
+                 selectInput("sample", "Dataset", multiple = FALSE, selected = "ct_p3",
+                             choices = list(
+                               "Sample collection 1" = c("Sample 1 name" = "s1_id",
+                                                         "Sample 2 name" = "s2_id"),
+                               "Sample collection 2" = c("Sample 3 name" = "s3_id",
+                                                         "Sample 4 name" = "s4_id",
+                                                         "Sample 5 name" = "s5_id")
+                             )),
       selectInput("gene", "Genes (max 3)", choices = character(0), multiple = TRUE),
       selectInput("dr", "Dimensionality reduction", multiple = FALSE, choices = c("tsne", "pca"), selected = "tsne"),
       h3("Feature plot"),
@@ -49,15 +44,20 @@ ui <- fluidPage(
     # Output plots
     mainPanel(tabsetPanel(
 
-                tabPanel("Gene expression",
+                tabPanel("Visualize gene expression",
                          plotOutput("dr_plot", width = "5in", height = "5in"),
                          plotOutput("feature"),
                          downloadLink("download_feature", "Download PDF"),
                          plotOutput("vln"),
                          downloadLink("download_vln", "Download PDF")
                 ),
+                
                 tabPanel("Sample info",
-                         tableOutput("ncell_table"))
+                         tableOutput("ncell_table")),
+                
+                tabPanel("Cluster markers",
+                         p("Use the navigation tools to search, filter, and order the table of gene markers."),
+                         DT::dataTableOutput("markers"))
 
               )
     )
@@ -79,8 +79,10 @@ server <- function(input, output, session) {
   })
   
   # Reactive expressions
-  gene <- reactive({head(input$gene, 3)})
-  seurat <- reactive({get(load(input$sample))})
+  gene   <- reactive({head(input$gene, 3)})
+  seurat <- reactive({  get(load(paste0("data/seurat/",  input$sample, ".seurat_small.Rda")))})
+  mk     <- reactive({read.delim(paste0("data/markers/", input$sample, ".markers.tsv"),
+                                 stringsAsFactors = FALSE)})
 
   # tSNE
   output$dr_plot <- renderPlot({cytokit::plotDR(seurat(), reduction = input$dr,
@@ -94,6 +96,17 @@ server <- function(input, output, session) {
     colnames(n_cells) <- c("Cluster", "Number of cells")
     return(n_cells)
   })
+  
+  # Markers
+  output$markers <- DT::renderDataTable({
+    mk() %>%
+      dplyr::select(cluster, external_gene_name, avg_logFC, p_val_adj, pct.1, pct.2, ensembl_gene_id, description) %>% 
+      DT::datatable(filter = "top",
+                  rownames = FALSE,
+                  selection = "none") %>% 
+      formatStyle("cluster",  fontWeight = "bold") %>% 
+      formatStyle("external_gene_name",  fontWeight = "bold")
+    })
 
   # Feature plot
   feature_plot <- reactive({cytokit::feature(seurat(), genes = gene(),
