@@ -30,7 +30,7 @@ You can have as many samples as you like!
 
 Currently this works for SC data stored in seurat objects. Since these objects
 tend to be large and store a lot of data, most of which are not needed for the simple
-functions here, and generating smaller versions to be stored alongside this app help with speed.
+functions here, generating smaller versions to be stored alongside this app can dramatically help with speed.
 These should be saved in the `data` directory, each named as `sn_id.seurat_small.Rda`.
 
 #### Shrinking Seurat objects
@@ -94,7 +94,7 @@ columns of your markers files, at the step which generates `output$markers`.
 We save the gene lists for each sample to allow them to be searched by the user
 in the app when visualizing expression. To prepare this list:
 
-1. Populating the `data` directory
+1. Populate the `data` directory (step 1)
 2. Modify the indicated lines in `get_genes.R` with your sample IDs
 3. Run `$ Rscript get_genes.R` from the top level of the directory storing your app
 
@@ -105,6 +105,6 @@ there are two collections of samples - you can have as many collections as you l
 each containing as many samples as you like.
 
 NOTE: The `sn_id` fields **must** match exactly the sample IDs used to name your data.
-The `Sample n name` fields can be friendlier versions of the sample IDs, or exactly the same; nothing depends on these and they are just for listing the available datasets.
+The `Sample n name` fields can be friendlier versions of the sample IDs, or exactly the same; nothing depends on these and they are just for listing the available datasets within the app.
 
 ## 4. Open `app.R` in RStudio and hit `Run App`! 
