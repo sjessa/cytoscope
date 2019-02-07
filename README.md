@@ -3,6 +3,8 @@
 
 A simple Shiny app for visualizing single cell data.
 
+![](demo.png)
+
 ## 0. Structure
 
 This app expects the following directory structure with these naming conventions for samples, where `sn_id` corresponds to the ID of sample *n*:
