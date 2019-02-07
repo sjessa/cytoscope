@@ -5,6 +5,8 @@ A simple Shiny app for visualizing single cell data
 
 ![](demo2.png)
 
+Package requirements: `shiny`, `DT`, and `Seurat` packages from CRAN, and `cytokit`.
+
 ## 0. Structure
 
 This app expects the following directory structure with these naming conventions for samples, where `sn_id` corresponds to the ID of sample *n*:
