@@ -1,7 +1,7 @@
 
 # cytoscope
 
-A simple Shiny app for visualizing single cell data.
+A simple Shiny app for visualizing single cell data
 
 ![](demo.png)
 
